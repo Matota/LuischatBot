@@ -1,6 +1,8 @@
 // This loads the environment variables from the .env file
+//also starting point
 require('dotenv-extended').load();
 
+//botbuilder
 var builder = require('botbuilder');
 var restify = require('restify');
 var Store = require('./store');
@@ -101,7 +103,7 @@ bot.dialog('ShowHotelsReviews', function (session, args) {
 });
 
 bot.dialog('Help', function (session) {
-    session.endDialog('Hi! Try asking me things like \'search hotels in Seattle\', \'search hotels near LAX airport\' or \'show me the reviews of The Bot Resort\'');
+    session.endDialog('Hi!! Try asking me things like \'search hotels in Seattle\', \'search hotels near LAX airport\' or \'show me the reviews of The Bot Resort\'');
 }).triggerAction({
     matches: 'Help'
 });
