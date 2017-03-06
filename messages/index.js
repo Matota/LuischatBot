@@ -7,7 +7,7 @@ http://docs.botframework.com/builder/node/guides/understanding-natural-language/
 "use strict";
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
-
+var locationDialog = require('botbuilder-location');
 var useEmulator = (process.env.NODE_ENV == 'development');
 
 var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector({
@@ -39,7 +39,31 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     session.send('Sorryyyyy, I did not understand \'%s\'.', session.message.text);
 });
 
-bot.dialog('/', intents);    
+bot.library(locationDialog.createLibrary('ApBn8xoItlENbFx-rr1kzt_JakWdFTH24taCasYxQCgit15NtDeYrztO4chDtrg5'));
+
+bot.dialog("/", [
+    function (session) {
+        var options = {
+            prompt: "Where should I ship your order?",
+            useNativeControl: true,
+            reverseGeocode: true,
+            requiredFields:
+                locationDialog.LocationRequiredFields.streetAddress |
+                locationDialog.LocationRequiredFields.locality |
+                locationDialog.LocationRequiredFields.region |
+                locationDialog.LocationRequiredFields.postalCode |
+                locationDialog.LocationRequiredFields.country
+        };
+
+        locationDialog.getLocation(session, options);
+    },
+    function (session, results) {
+        if (results.response) {
+            var place = results.response;
+            session.send("Thanks, I will ship to " + locationDialog.getFormattedAddressFromPlace(place, ", "));
+        }
+    }
+]);   
 
 if (useEmulator) {
     var restify = require('restify');
